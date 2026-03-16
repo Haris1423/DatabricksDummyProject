@@ -1,0 +1,56 @@
+# This is a Databricks asset bundle definition for dab_tutorial.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: dab_tutorial
+  uuid: d7e52cb2-f3bb-4968-85cd-1f1c6de5f7e0
+
+include:
+  - resources/*.yml
+  - resources/*/*.yml
+# we dedicate folder for jobs , clusters , pipelines
+# artifacts:
+#   python_artifact:
+#     type: whl
+#     build: uv build --wheel
+
+# Variable declarations. These variables are assigned in the dev/prod targets below.
+variables:
+  catalog:
+    description: The catalog to use
+  schema:
+    description: The schema to use
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: dbc-4ce63a25-e2a1.cloud.databricks.com
+    variables:
+      catalog: workspace
+      schema: ${workspace.current_user.short_name}
+    permissions:
+      - group_name: admins
+        level: CAN_MANAGE
+    presets :
+      name_prefix: ${workspace.current_user.short_name}
+      source_linked_deployment : false
+
+  prod:
+    mode: production
+    workspace:
+      host: dbc-4ce63a25-e2a1.cloud.databricks.com
+      # We explicitly deploy to /Workspace/Users/harisbhat14231@gmail.com to make sure we only have a single copy.
+      root_path: /Workspace/PROD/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: workspace
+      schema: prod
+    permissions:
+      - user_name: harisbhat14231@gmail.com
+        level: CAN_MANAGE
+      - group_name:  admins
+        level : CAN_RUN

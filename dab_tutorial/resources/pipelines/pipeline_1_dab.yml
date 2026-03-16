@@ -1,0 +1,15 @@
+resources:
+  pipelines:
+    pipeline_pipeline_1_dab:
+      name: pipeline_1_dab
+      libraries:
+        - glob:
+            include: ../../src/pipeline_1_dab/transformations/**
+      schema: default
+      continuous: false
+      development: false
+      photon: true
+      channel: CURRENT
+      catalog: databricksharis
+      serverless: true
+      root_path: ../../src/pipeline_1_dab
